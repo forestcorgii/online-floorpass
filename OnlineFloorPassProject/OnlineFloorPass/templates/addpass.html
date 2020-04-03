@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Floorpass</title>
+    {% block loads %}
+    {% load static %}
+    {% endblock %}
+
+    {% block materialize_stylesheets %}
+    <link type="text/css" rel="stylesheet" href="{% static 'materialize/css/materialize.css' %}"
+          media="screen,projection"/>
+    {% endblock %}
+</head>
+<body>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<div class="row">
+    <form action="{% url 'floorpass:verify' %}" method="POST">
+        {% csrf_token %}
+
+        <div class="card-panel col s12">
+            <div class="input-field col s2">
+                <textarea name="requestor_employee_ids" id="requestor_employee_ids"
+                          class="materialize-textarea"></textarea>
+                <label for="requestor_employee_ids">Employee IDs</label>
+            </div>
+            <div class="input-field col s2">
+                <input value="" name="requestor_purpose" id="requestor_purpose" type="text" class="validate">
+                <label class="active" for="requestor_purpose">Purpose</label>
+            </div>
+            <div class="col s2"><br>
+                <select name="requestor_department_id" id="requestor_department_id" class="browser-default">
+                    <option value="" disabled selected>Choose your Department</option>
+                    {% for department in department_list %}
+                    <option value="{{ department.name }}">{{ department.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col s2"><br>
+                <button class="btn waves-effect waves-light" type="submit" name="action">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% block materialize_javascripts %}
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js">
+    $(document).ready(function() {
+    $('select').material_select();
+});
+
+
+</script>
+<script type="text/javascript" src="{% static 'materialize/js/materialize.min.js' %}"></script>
+{% endblock %}
+</body>
+</html>
