@@ -16,15 +16,15 @@
 
 </head>
 <body>
-<br>
-<div class="row">
-    <div class="col s10"><br>
-        Online Floorpass
+<nav class="nav-wrapper">
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">Online Floor Pass</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li>{{ supervisor_id }}</li>
+            <li><a href="{% url 'floorpass:index' %}">Logout</a></li>
+        </ul>
     </div>
-    <div class="col s2">
-
-    </div>
-</div>
+</nav>
 
 <div class="row">
     <div class="col s12"><p><strong>{{ message }}</strong></p></div>

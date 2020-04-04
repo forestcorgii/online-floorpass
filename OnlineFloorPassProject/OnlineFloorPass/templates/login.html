@@ -1,70 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
     {% block loads %}
     {% load static %}
     {% endblock %}
-    <!--    {% block materialize_stylesheets %}-->
-    <!--    <link type="text/css" rel="stylesheet" href="{% static 'materialize/css/materialize.css' %}"-->
-    <!--          media="screen,projection"/>-->
-    <!--    {% endblock %}-->
+    {% block materialize_stylesheets %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="{% static 'materialize/css/materialize.css' %}"
+        media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="{% static 'materialize/css/custom.css' %}" media="screen,projection" />
+    {% endblock %}
+
+    {% block materialize_javascripts %}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'materialize/js/materialize.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'materialize/js/custom.js' %}"></script>
+    {% endblock %}
 </head>
+
 <body>
-<p><strong>{{ message }}</strong></p>
-<div class="row">
-    <div class="card-panel col s4 offset-s4">
-        <form action="{% url 'floorpass:login' %}" method="post">
-            {% csrf_token %}
-            <div class="input-field col s12">
-                <input name="employee_id" id="employee_id" type="text" class="validate">
-                <label class="active" for="employee_id">Employee ID</label>
-            </div>
-            <div class="input-field col s12">
-                <div class="col s6">
-                    <label>
-                        <input type="radio" name="type" id="supervisor" value="0" checked>
-                        <span>Supervisor</span>
-                    </label>
+    {% block content %}
+    <p><strong>{{ message }}</strong></p>
+    <div class="row">
+        <div class="card-panel col s4 offset-s4">
+            <form action="{% url 'floorpass:login' %}" method="post">
+                {% csrf_token %}
+                <div class="input-field col s12">
+                    <input name="employee_id" id="employee_id" type="text" class="validate uppercase">
+                    <label class="active" for="employee_id">Employee ID</label>
+                </div>
+                <div class="input-field col s12">
+                    <div class="col s6">
+                        <label>
+                            <input type="radio" name="type" id="supervisor" value="0" checked>
+                            <span>Supervisor</span>
+                        </label>
+                    </div>
+                    <div class="col s6">
+                        <label>
+                            <input type="radio" name="type" id="guard" value="1">
+                            <span>Guard</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="col s6">
-                    <label>
-                        <input type="radio" name="type" id="guard" value="1">
-                        <span>Guard</span>
-                    </label>
+                    <label>Department</label>
+                    <select name="department_id" id="department_id" class="browser-default">
+                        <option value="">Choose here...</option>
+                        {% for department in department_list %}
+                        <option value="{{ department.name }}">{{ department.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            <div class="col s6">
-                <label>Department</label>
-                <select name="department_id" id="department_id" class="browser-default">
-                    <option value=""></option>
-                    {% for department in department_list %}
-                    <option value="{{ department.name }}">{{ department.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col s6">
-                <label>Location</label>
-                <select name="location_id" id="location_id" class="browser-default">
-                    <option value="">Location</option>
-                    {% for location in location_list %}
-                    <option value="{{ location.name }}">{{ location.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                <div class="col s6">
+                    <label>Location</label>
+                    <select name="location_id" id="location_id" class="browser-default">
+                        <option value="">Choose here...</option>
+                        {% for location in location_list %}
+                        <option value="{{ location.name }}">{{ location.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <div class="input-field col s4">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Submit</button>
-            </div>
-        </form>
+                <div class="input-field col s4">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+    {% endblock %}
 
-
-{% block materialize_javascripts %}
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript" src="{% static 'materialize/js/materialize.min.js' %}"></script>
-{% endblock %}
 </body>
+
 </html>

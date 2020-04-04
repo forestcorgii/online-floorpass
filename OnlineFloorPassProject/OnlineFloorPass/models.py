@@ -54,19 +54,20 @@ class FloorPass(models.Model):
 
     def timeout(self):
         log_count = len(self.log_set.all())
-        if log_count <= 0:
+        if log_count <= 1:
             return ''
-        elif log_count > 1 and self.location == self.log_set.all()[log_count - 1].location:
+        elif log_count > 1 and self.location.name == self.log_set.all()[log_count - 1].location:
             return self.log_set.all()[log_count - 1].logdatetime.strftime("%m-%d %H:%M:%S")
 
     def time_elapse(self):
-        if len(self.log_set.all()) == 0:
+        log_count = len(self.log_set.all())
+        if log_count <= 1:
             return ''
         else:
-            return str(timezone.now() - self.log_set.all()[0].logdatetime).split(".")[0]
+            return str(self.log_set.all()[log_count - 1].logdatetime - self.log_set.all()[0].logdatetime).split(".")[0]
 
     def completed(self):
-        return (len(self.log_set.all()) == 0 and self.location == self.current_location(self))
+        return len(self.log_set.all()) == 0 and self.location == self.current_location(self)
 
 
 class Log(models.Model):

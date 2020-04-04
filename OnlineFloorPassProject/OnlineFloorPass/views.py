@@ -53,7 +53,7 @@ def log(request):
     location = get_object_or_404(Location, pk=request.session['location_id'])
     latest_floorpass_list = location.floorpass_set.order_by(
         '-latest_log_date')
-    context = {'latest_floorpass_list': latest_floorpass_list, 'guard_id': request.session['employee_id'],
+    context = {'latest_floorpass_list': latest_floorpass_list, 'guard_id': request.session['admin_id'],
                'location_id': request.session['location_id'], 'message': request.session.get('message', '')}
     return render(request, 'log.html', context)
 
@@ -76,7 +76,7 @@ def manager(request):
     latest_floorpass_list = department.floorpass_set.order_by(
         '-latest_log_date')
     context = {'latest_floorpass_list': latest_floorpass_list, 'department_list': Department.objects.all,
-               'message': request.session.get('message', '')}
+               'message': request.session.get('message', ''), 'supervisor_id': request.session['admin_id']}
     return render(request, 'manager.html', context)
 
 

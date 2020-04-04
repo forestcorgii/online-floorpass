@@ -15,25 +15,32 @@
     {% endblock %}
 </head>
 <body>
-<br>
+<nav class="nav-extended">
+    <nav class="nav-wrapper">
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo">Online Floor Pass</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li>{{ guard_id }}</li>
+                <li><a href="{% url 'floorpass:index' %}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+</nav>
 <div class="row">
-    <div class="col s10"><br>
-        Online Floorpass
-    </div>
     <div class="col s12">
-        <form action="{% url 'floorpass:log_add' %}" method="post">
-            {% csrf_token %}
-            <div class="input-field col s2">
-                <input value="" name="ref_id" id="ref_id" type="text" class="validate">
-                <label class="active" for="ref_id">Reference ID</label>
-            </div>
-            <div class="input-field col s2">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Log</button>
-            </div>
-        </form>
-    </div>
-    <div class="col s10">
-        <div class="container card-panel">
+        <div class="col s10">
+            <form action="{% url 'floorpass:log_add' %}" method="post">
+                {% csrf_token %}
+                <div class="input-field col s3">
+                    <input value="" name="ref_id" id="ref_id" type="text" class="validate">
+                    <label class="active" for="ref_id">Reference ID</label>
+                </div>
+                <!--            <div class="input-field col s2">-->
+                <!--                <button class="btn waves-effect waves-light" type="submit" name="action">Log</button>-->
+                <!--            </div>-->
+            </form>
+        </div>
+        <div class="card-panel">
             {% if latest_floorpass_list %}
             <table class="highlight">
                 <tr>
