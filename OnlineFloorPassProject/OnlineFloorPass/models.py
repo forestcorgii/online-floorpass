@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from enum import Enum
 
+from django.db import models
 
 # Create your models here.
 # class Guard(models.Model):
@@ -12,6 +13,7 @@ from enum import Enum
 # class Supervisor(models.Model):
 #     employee_id = models.CharField(max_length=4, primary_key=True)
 #     fullname = models.TextField(null=True)
+
 
 class Location(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
@@ -25,9 +27,10 @@ class Department(models.Model):
 
 class FloorPass(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True)
-    employee_ids = models.TextField()
-    supervisor = models.TextField()
+    department = models.ForeignKey(
+        Department, on_delete=models.CASCADE, null=True)
+    supervisor_id = models.CharField(max_length=4, blank=True, null=True)
+    supervisor_name = models.TextField(blank=True, null=True)
     purpose = models.TextField(blank=True, null=True)
     Status = models.IntegerChoices('Status', 'STAND_BY DEPARTED ARRIVED')
     status = models.IntegerField(choices=Status.choices, null=True)

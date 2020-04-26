@@ -6,6 +6,27 @@ import requests
 import json
 from django.utils import timezone
 
+from .forms import NameForm, LogForm
+
+
+def get_name(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NameForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/thanks/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NameForm()
+
+    return render(request, 'name.html', {'form': form})
+
 
 def get_json(id):
     url = "http://idcsi-officesuites.com:8080/hrms/api.php"
@@ -17,7 +38,8 @@ def get_json(id):
     files = []
     headers = {}
 
-    response = requests.request("POST", url, headers=headers, data=payload, files=files)
+    response = requests.request(
+        "POST", url, headers=headers, data=payload, files=files)
     return response.json()
 
 
@@ -40,7 +62,7 @@ def login(request):
         request.session['department_id'] = request.POST['department_id']
 
         if request.POST['type'] == '0':
-            return HttpResponseRedirect(reverse('floorpass:manager', args=(40,)))
+            return HttpResponseRedirect(reverse('floorpass:manager'))
         elif request.POST['type'] == '1':
             return HttpResponseRedirect(reverse('floorpass:log'))
         else:
@@ -72,7 +94,8 @@ def log_add(request):
 
 
 def manager(request):
-    department = get_object_or_404(Department, pk=request.session['department_id'])
+    department = get_object_or_404(
+        Department, pk=request.session['department_id'])
     latest_floorpass_list = department.floorpass_set.order_by(
         '-latest_log_date')
     context = {'latest_floorpass_list': latest_floorpass_list, 'department_list': Department.objects.all,
@@ -81,29 +104,31 @@ def manager(request):
 
 
 def manager_edit(request, ref_id):
-    department = get_object_or_404(Department, pk=request.session['department_id'])
+    department = get_object_or_404(
+        Department, pk=request.session['department_id'])
     latest_floorpass_list = department.floorpass_set.order_by(
         '-latest_log_date')
     context = {'latest_floorpass_list': latest_floorpass_list, 'department_list': Department.objects.all,
                'ref_id': ref_id,
-               'message': request.session.get('message', '')}
+               'message': request.session.get('message', ''),
+               'logform': LogForm()}
     return render(request, 'manager.html', context)
 
 
 def verify(request, ref_id):
-    emp_inf = get_json(request.POST.get('requestor_employee_ids', ''))
+    emp_inf = get_json(request.POST.get('requestor_employee_id', ''))
     user = User()
     user.floorpass = get_object_or_404(FloorPass, pk=ref_id)
 
     if emp_inf['code'] != 0:
         request.session['message'] = 'Invalid Credentials, use a valid Employee ID.'
         return HttpResponseRedirect(reverse('floorpass:manager', args=(ref_id,)))
-    elif len(User.objects.filter(employee_id=request.POST['requestor_employee_ids'],
+    elif len(user.objects.filter(employee_id=request.POST['requestor_employee_id'],
                                  floorpass=ref_id)) > 0:
         request.session['message'] = 'Invalid Credentials, duplicate ID.'
         return HttpResponseRedirect(reverse('floorpass:manager', args=(ref_id,)), request)
     else:
-        user.employee_id = request.POST['requestor_employee_ids']
+        user.employee_id = request.POST['requestor_employee_id']
         user.employee_name = str(
             '{}, {}'.format(emp_inf['message'][0]['last_name'], emp_inf['message'][0]['first_name']))
         user.floorpass.latest_log_date = timezone.now()
@@ -115,13 +140,15 @@ def verify(request, ref_id):
 
 
 def generate_floorpass_id(request):
-    if request.POST.get('requestor_department_id', '') == '' and request.POST.get('requestor_purpose', '') == '':
+    if request.POST.get('requestor_purpose', '') == '':
         request.session['message'] = 'Invalid Credentials, input purpose and department..'
         return HttpResponseRedirect(reverse('floorpass:manager'))
     else:
         floorpass = FloorPass()
-        floorpass.department = get_object_or_404(Department, pk=request.POST['requestor_department_id'])
-        floorpass.location = get_object_or_404(Location, pk=request.session['location_id'])
+        floorpass.department = get_object_or_404(
+            Department, pk=request.POST['requestor_department_id'])
+        floorpass.location = get_object_or_404(
+            Location, pk=request.session['location_id'])
         floorpass.supervisor = request.session['admin_name']
 
         floorpass.purpose = request.POST['requestor_purpose']
