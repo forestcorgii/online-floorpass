@@ -4,7 +4,7 @@ from django.utils import timezone
 from enum import Enum
 
 from django.db import models
-
+from django.utils import timezone
 # Create your models here.
 # class Guard(models.Model):
 #     employee_id = models.CharField(max_length=4, primary_key=True)
@@ -30,12 +30,20 @@ class FloorPass(models.Model):
     department = models.ForeignKey(
         Department, on_delete=models.CASCADE, null=True)
     supervisor_id = models.CharField(max_length=4, blank=True, null=True)
-    supervisor_name = models.TextField(blank=True, null=True)
+    supervisor_name = models.CharField(max_length=100, blank=True, null=True)
     purpose = models.TextField(blank=True, null=True)
     Status = models.IntegerChoices('Status', 'STAND_BY DEPARTED ARRIVED')
     status = models.IntegerField(choices=Status.choices, null=True)
-    latest_log_date = models.DateTimeField(blank=True, null=True)
+    # latest_log_date = models.DateTimeField(blank=True, null=True)
     objects = models.Manager()
+
+    @property
+    def latest_log_date(self):
+        log_count = len(self.log_set.all())
+        if log_count == 0:
+            return timezone.now().strftime("%m-%d %H:%M:%S")
+        else:
+            return self.log_set.all()[log_count - 1].logdatetime.strftime("%m-%d %H:%M:%S")
 
     def status_label(self):
         if self.status is None:
@@ -75,7 +83,7 @@ class FloorPass(models.Model):
 
 class Log(models.Model):
     guard_id = models.CharField(max_length=4, blank=True, null=True)
-    logdatetime = models.DateTimeField()
+    logdatetime = models.DateTimeField(auto_now_add=True)
     floorpass = models.ForeignKey(FloorPass, on_delete=models.CASCADE)
     location = models.CharField(max_length=100, null=True)
 

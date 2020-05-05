@@ -17,12 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
 class FloorPassSerializer(serializers.ModelSerializer):
     logs = LogSerializer(many=True, read_only=True, source='log_set')
     employees = UserSerializer(many=True, read_only=True, source='user_set')
+    # latest_log_date = serializers.CharField(source='owner.latest_log_date')
 
     class Meta:
         model = FloorPass
         fields = ['id', 'department', 'location', 'status_label',
                   'purpose', 'supervisor_id', 'supervisor_name', 'latest_log_date', 'employees', 'logs']
 
+
+class ListSerializer(serializers.Serializer):
+    name = serializers.CharField(read_only=True)
 
 # class FloorPassDetailSerializer(serializers.Serializer):
 #     id = serializers.CharField()

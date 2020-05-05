@@ -7,11 +7,14 @@ from rest_framework.urlpatterns import format_suffix_patterns
 app_name = 'floorpass'
 
 urlpatterns = format_suffix_patterns([
-    re_path('^filter/$', api.api_root),
-    path('', api.api_root),
+    re_path('^filter/$', api.filter),
+    path('', api.filter),
 
-    # path('', api.FloorPassList.as_view(), name='floorpass-list'),
-    path('<int:pk>/', api.FloorPassDetail.as_view(), name='floorpass-detail'),
+    re_path('^list/$', api.list),
+
+    path('floorpass/', api.FloorPassList.as_view(), name='floorpass-list'),
+    path('floorpass/<int:pk>/', api.FloorPassDetail.as_view(),
+         name='floorpass-detail'),
 
     path('log/', api.LogList.as_view(), name='log-list'),
     path('log/<int:pk>/', api.LogDetail.as_view(), name='log-detail'),

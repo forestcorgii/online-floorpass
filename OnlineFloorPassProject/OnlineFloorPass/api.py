@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.decorators import api_view
 
-from .models import FloorPass, User, Log
-from .serializers import FloorPassSerializer, LogSerializer, UserSerializer
+from .models import FloorPass, User, Log,  Department, Location
+from .serializers import FloorPassSerializer, LogSerializer, UserSerializer, ListSerializer
 from django.http import JsonResponse, HttpResponse
 
 from rest_framework.response import Response
@@ -19,7 +19,7 @@ from rest_framework.reverse import reverse
 
 
 @api_view(['GET'])
-def api_root(request):
+def filter(request):
     if request.method == 'GET':
         floorpass = FloorPass.objects.all()
 
@@ -34,7 +34,10 @@ def api_root(request):
                 floorpass = floorpass.filter(location=request.GET['location'])
 
         if request.GET.get('sort', False):
-            floorpass = floorpass.order_by(request.GET['sort'])
+            if 'latest_log_date' in request.GET['sort']:
+                floorpass = sorted(
+                    floorpass, key=lambda f: f.latest_log_date)  # , reverse='-'in request.GET['sort'])
+            # floorpass = floorpass.order_by(request.GET['sort'])
 
         if request.GET.get('limit', False):
             floorpass = floorpass[:int(request.GET['limit'])]
@@ -43,8 +46,28 @@ def api_root(request):
         return JsonResponse(serializer.data, safe=False)
 
 
+@api_view(['GET'])
+def list(request):
+    if request.method == 'GET':
+        if request.GET.get('type', False):
+            _list = None
+            if request.GET['type'] == '0':
+                _list = Department.objects.all()
+            elif request.GET['type'] == '1':
+                _list = Location.objects.all()
+
+            serializer = ListSerializer(_list, many=True)
+            return JsonResponse(serializer.data, safe=False)
+
+
+# @api_view(['DELETE'])
+# def delete(request):
+#     if request.method == 'DELETE':
+#         user = User.objects.filter(floorpass=)
+
+
 class FloorPassList(generics.ListCreateAPIView):
-    queryset = FloorPass.objects.order_by('-latest_log_date')
+    queryset = FloorPass.objects.all()
     serializer_class = FloorPassSerializer
 
 
