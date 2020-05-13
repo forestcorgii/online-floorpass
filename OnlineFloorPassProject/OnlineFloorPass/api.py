@@ -51,9 +51,9 @@ def list(request):
     if request.method == 'GET':
         if request.GET.get('type', False):
             _list = None
-            if request.GET['type'] == '0':
+            if request.GET['type'] == 'department':
                 _list = Department.objects.all()
-            elif request.GET['type'] == '1':
+            elif request.GET['type'] == 'location':
                 _list = Location.objects.all()
 
             serializer = ListSerializer(_list, many=True)
